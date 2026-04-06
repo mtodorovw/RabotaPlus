@@ -1,0 +1,9 @@
+.env
+node_modules/
+vendor/
+*.log
+.DS_Store
+Thumbs.db
+config.local.php
+uploads/
+assets/uploads
