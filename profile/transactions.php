@@ -31,6 +31,14 @@ $st = db()->prepare("
 $st->execute($params);
 $txs = $st->fetchAll();
 
+// Pre-load approved withdrawal request IDs for invoice visibility check
+$approvedWrAmounts = [];
+try {
+    $wrSt = db()->prepare("SELECT amount FROM withdrawal_requests WHERE user_id=? AND status='approved'");
+    $wrSt->execute([$user['id']]);
+    $approvedWrAmounts = array_column($wrSt->fetchAll(), 'amount');
+} catch (Exception $e) {}
+
 // Summary totals
 // Totals: separate queries for clarity and correctness
 $userId = $user['id'];
@@ -171,7 +179,14 @@ require_once __DIR__ . '/../includes/header.php';
             <?= date('d.m.Y H:i', strtotime($tx['created_at'])) ?>
         </td>
         <td>
-            <?php if (in_array($tx['type'], ['deposit','withdrawal','escrow_release','refund'])): ?>
+            <?php
+            $showInvoice = in_array($tx['type'], ['deposit','escrow_release','refund']);
+            // For withdrawals: only show invoice if there's a matching approved withdrawal request
+            if ($tx['type'] === 'withdrawal') {
+                $showInvoice = in_array(abs($tx['amount']), array_map('abs', $approvedWrAmounts));
+            }
+            ?>
+            <?php if ($showInvoice): ?>
                 <a href="<?= url('profile/invoice.php?tx='.$tx['id']) ?>" class="btn btn-outline btn-sm" title="PDF фактура">📄</a>
             <?php else: ?>
                 <span style="color:var(--text-dim);">—</span>

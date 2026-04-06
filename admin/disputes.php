@@ -341,7 +341,7 @@ function renderDisputeCard(array $d, array $admin, bool $isAssigned): void {
                 <form method="post" style="margin:0;">
                     <input type="hidden" name="csrf" value="<?= csrf() ?>">
                     <input type="hidden" name="release_dispute" value="<?= $d['id'] ?>">
-                    <button type="submit" class="btn btn-outline btn-sm" style="color:var(--text-dim);" onclick="return confirm('Освободи спора — ще се върне в Отворени?')">🔓 Освободи спора</button>
+                    <button type="submit" class="btn btn-outline btn-sm" style="color:var(--text-dim);border-color:var(--border-dim);" onclick="return confirm('Откажи поетия спор — ще се върне в Отворени без да се освобождават пари. Сигурен ли си?')">🔙 Откажи поемането</button>
                 </form>
             </div>
         </form>
