@@ -17,12 +17,19 @@ $tx = $st->fetch();
 
 if (!$tx) { flash('Транзакцията не е намерена.', 'error'); redirect(url('profile/transactions.php')); }
 
-// Block invoice for withdrawals: only allowed if this transaction has an approved withdrawal request
+// Refunds (money returned after dispute) - no invoice allowed
+if ($tx['type'] === 'refund') {
+    flash('За тази транзакция не може да се генерира фактура.', 'error');
+    redirect(url('profile/transactions.php'));
+}
+
+// Withdrawal invoice: only if the matching withdrawal_request is approved
 if ($tx['type'] === 'withdrawal') {
-    // Find a withdrawal request approved around the same time as this transaction
-    $wrSt = db()->prepare("SELECT id FROM withdrawal_requests WHERE user_id=? AND status='approved' AND ABS(amount - ?) < 0.01 LIMIT 1");
-    $wrSt->execute([$user['id'], abs($tx['amount'])]);
-    if (!$wrSt->fetch()) {
+    // Try by tx_id first (reliable), fall back to amount match
+    $wrSt = db()->prepare("SELECT status FROM withdrawal_requests WHERE user_id=? AND (tx_id=? OR ABS(amount - ?) < 0.01) ORDER BY (tx_id=?) DESC, created_at DESC LIMIT 1");
+    $wrSt->execute([$user['id'], $txId, abs($tx['amount']), $txId]);
+    $wr = $wrSt->fetch();
+    if (!$wr || $wr['status'] !== 'approved') {
         flash('Фактурата за теглене е достъпна само след одобрение от администратор.', 'error');
         redirect(url('profile/transactions.php'));
     }

@@ -50,15 +50,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $txId = (int)$pdo->lastInsertId();
 
-            // Create withdrawal request for admin
-            $wrSt = $pdo->prepare('INSERT INTO withdrawal_requests (user_id, amount, method, iban, account_name) VALUES (?,?,?,?,?)');
-            $wrSt->execute([
-                $user['id'],
-                $amount,
-                $method,
-                $method === 'iban' ? ($iban ?? null) : null,
-                $method === 'iban' ? ($accName ?? null) : null,
-            ]);
+            // Create withdrawal request for admin (link to the transaction)
+            $wrSt = $pdo->prepare('INSERT INTO withdrawal_requests (user_id, amount, method, iban, account_name, tx_id) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE tx_id=tx_id');
+            try {
+                $wrSt->execute([
+                    $user['id'], $amount, $method,
+                    $method === 'iban' ? ($iban ?? null) : null,
+                    $method === 'iban' ? ($accName ?? null) : null,
+                    $txId,
+                ]);
+            } catch (Exception $e) {
+                // tx_id column may not exist yet — insert without it
+                $wrSt2 = $pdo->prepare('INSERT INTO withdrawal_requests (user_id, amount, method, iban, account_name) VALUES (?,?,?,?,?)');
+                $wrSt2->execute([$user['id'], $amount, $method, $method === 'iban' ? ($iban ?? null) : null, $method === 'iban' ? ($accName ?? null) : null]);
+            }
 
             $pdo->commit();
 

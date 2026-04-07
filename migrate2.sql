@@ -99,3 +99,7 @@ CREATE TABLE IF NOT EXISTS chat_reads (
     FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- 12. Link withdrawal_requests to their transaction for reliable invoice check
+ALTER TABLE withdrawal_requests ADD COLUMN IF NOT EXISTS tx_id INT DEFAULT NULL;
+ALTER TABLE withdrawal_requests ADD FOREIGN KEY IF NOT EXISTS fk_wr_tx (tx_id) REFERENCES transactions(id) ON DELETE SET NULL;
