@@ -338,12 +338,12 @@ function renderDisputeCard(array $d, array $admin, bool $isAssigned): void {
                 <a href="<?= url('contracts/view.php?id='.$d['contract_id']) ?>" class="btn btn-outline btn-sm">📄 Договор</a>
                 <button type="submit" name="resolution" value="employer" class="btn btn-outline" onclick="return confirm('Върни средствата на работодателя?')">↩ Върни на работодателя</button>
                 <button type="submit" name="resolution" value="contractor" class="btn btn-success" onclick="return confirm('Освободи за изпълнителя?')">✓ Освободи за изпълнителя</button>
-                <form method="post" style="margin:0;">
-                    <input type="hidden" name="csrf" value="<?= csrf() ?>">
-                    <input type="hidden" name="release_dispute" value="<?= $d['id'] ?>">
-                    <button type="submit" class="btn btn-outline btn-sm" style="color:var(--text-dim);border-color:var(--border-dim);" onclick="return confirm('Откажи поетия спор — ще се върне в Отворени без да се освобождават пари. Сигурен ли си?')">🔙 Откажи поемането</button>
-                </form>
             </div>
+        </form>
+        <form method="post" style="margin-top:0.5rem;">
+            <input type="hidden" name="csrf" value="<?= csrf() ?>">
+            <input type="hidden" name="release_dispute" value="<?= $d['id'] ?>">
+            <button type="submit" class="btn btn-outline btn-sm" style="color:var(--text-dim);border-color:var(--border-dim);" onclick="return confirm('Откажи поемането — спорът се връща в Отворени без да се освобождават пари. Сигурен ли си?')">🔙 Откажи поемането</button>
         </form>
         <?php endif; ?>
     </div>

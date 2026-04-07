@@ -17,17 +17,12 @@ $tx = $st->fetch();
 
 if (!$tx) { flash('Транзакцията не е намерена.', 'error'); redirect(url('profile/transactions.php')); }
 
-// Block invoice for withdrawal transactions that haven't been approved yet
+// Block invoice for withdrawals: only allowed if this transaction has an approved withdrawal request
 if ($tx['type'] === 'withdrawal') {
-    $wrSt = db()->prepare("SELECT status FROM withdrawal_requests WHERE user_id=? AND amount=? AND status != 'approved' ORDER BY created_at DESC LIMIT 1");
+    // Find a withdrawal request approved around the same time as this transaction
+    $wrSt = db()->prepare("SELECT id FROM withdrawal_requests WHERE user_id=? AND status='approved' AND ABS(amount - ?) < 0.01 LIMIT 1");
     $wrSt->execute([$user['id'], abs($tx['amount'])]);
-    $wr = $wrSt->fetch();
-    // If there's a matching non-approved withdrawal request, block the invoice
-    // Also check if this specific transaction has a matching approved request
-    $approvedSt = db()->prepare("SELECT id FROM withdrawal_requests WHERE user_id=? AND status='approved' ORDER BY created_at DESC LIMIT 1");
-    $approvedSt->execute([$user['id']]);
-    $approved = $approvedSt->fetch();
-    if (!$approved) {
+    if (!$wrSt->fetch()) {
         flash('Фактурата за теглене е достъпна само след одобрение от администратор.', 'error');
         redirect(url('profile/transactions.php'));
     }

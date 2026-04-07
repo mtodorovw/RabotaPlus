@@ -31,12 +31,12 @@ $st = db()->prepare("
 $st->execute($params);
 $txs = $st->fetchAll();
 
-// Pre-load approved withdrawal request IDs for invoice visibility check
+// Pre-load approved withdrawal amounts for invoice button visibility
 $approvedWrAmounts = [];
 try {
     $wrSt = db()->prepare("SELECT amount FROM withdrawal_requests WHERE user_id=? AND status='approved'");
     $wrSt->execute([$user['id']]);
-    $approvedWrAmounts = array_column($wrSt->fetchAll(), 'amount');
+    $approvedWrAmounts = array_map('abs', array_column($wrSt->fetchAll(), 'amount'));
 } catch (Exception $e) {}
 
 // Summary totals
@@ -181,9 +181,8 @@ require_once __DIR__ . '/../includes/header.php';
         <td>
             <?php
             $showInvoice = in_array($tx['type'], ['deposit','escrow_release','refund']);
-            // For withdrawals: only show invoice if there's a matching approved withdrawal request
             if ($tx['type'] === 'withdrawal') {
-                $showInvoice = in_array(abs($tx['amount']), array_map('abs', $approvedWrAmounts));
+                $showInvoice = in_array(round(abs($tx['amount']), 2), array_map(fn($a) => round($a, 2), $approvedWrAmounts));
             }
             ?>
             <?php if ($showInvoice): ?>
