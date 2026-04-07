@@ -9,11 +9,11 @@ $tab = $_GET['tab'] ?? 'all';
 $where  = "WHERE t.user_id = ?";
 $params = [$user['id']];
 
-// Filter by tab — income/expense use amount sign, not type
+// Filter by tab — income/expense use amount sign, excluding deposit/withdrawal (they have own tabs)
 if ($tab === 'income') {
-    $where .= " AND t.amount > 0";
+    $where .= " AND t.amount > 0 AND t.type NOT IN ('deposit')";
 } elseif ($tab === 'expense') {
-    $where .= " AND t.amount < 0 AND t.type != 'escrow_lock'";   // exclude locked (not spent yet)
+    $where .= " AND t.amount < 0 AND t.type NOT IN ('escrow_lock','withdrawal')";  // exclude locked and withdrawals
 } elseif ($tab === 'deposits') {
     $where .= " AND t.type = 'deposit'";
 } elseif ($tab === 'withdraw') {
