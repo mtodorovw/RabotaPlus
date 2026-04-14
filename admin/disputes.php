@@ -140,15 +140,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dispute_id'])) {
                 'Спорът за „'.$dispute['listing_title'].'" беше решен в полза на работодателя.',
                 url('contracts/view.php?id='.$dispute['contract_id']));
         } else {
+            // Pay contractor with 5% commission deducted
+            $commission     = round($dispute['amount'] * 0.05, 2);
+            $contractorPays = round($dispute['amount'] - $commission, 2);
             $pdo->prepare('UPDATE users SET balance=balance+? WHERE id=?')
-                ->execute([$dispute['amount'], $dispute['contractor_id']]);
+                ->execute([$contractorPays, $dispute['contractor_id']]);
             $empDesc = 'Плащане за завършен договор (спор) — '.$dispute['listing_title'];
             $pdo->prepare("UPDATE transactions SET type='escrow_release', description=? WHERE contract_id=? AND user_id=? AND type='escrow_lock' ORDER BY id DESC LIMIT 1")
                 ->execute([$empDesc, $dispute['contract_id'], $dispute['employer_id']]);
-            logTransaction($dispute['contractor_id'], 'escrow_release', $dispute['amount'],
-                'Плащане за завършен договор — '.$dispute['listing_title'], $dispute['contract_id']);
+            logTransaction($dispute['contractor_id'], 'escrow_release', $contractorPays,
+                'Плащане за завършен договор (спор, след 5% комисионна) — '.$dispute['listing_title'], $dispute['contract_id']);
+            logTransaction($dispute['employer_id'], 'commission', -$commission,
+                'Комисионна 5% за договор (спор) — '.$dispute['listing_title'], $dispute['contract_id']);
             addNotification($dispute['contractor_id'], 'escrow_release',
-                'Спорът за „'.$dispute['listing_title'].'" беше решен в твоя полза. Парите са в баланса ти.',
+                'Спорът за „'.$dispute['listing_title'].'" беше решен в твоя полза. Получи '.formatMoney($contractorPays).' (след 5% комисионна).',
                 url('contracts/view.php?id='.$dispute['contract_id']));
             addNotification($dispute['employer_id'], 'dispute',
                 'Спорът за „'.$dispute['listing_title'].'" беше решен в полза на изпълнителя.',
