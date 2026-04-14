@@ -186,9 +186,8 @@ require_once __DIR__ . '/../includes/header.php';
             <?php
             $showInvoice = in_array($tx['type'], ['deposit','escrow_release']); // refund = no invoice
             if ($tx['type'] === 'withdrawal') {
-                // Show invoice only if this exact withdrawal transaction is approved
-                $showInvoice = in_array((int)$tx['id'], $approvedWrTxIds)
-                    || in_array(round(abs($tx['amount']), 2), $approvedWrAmounts);
+                // Show invoice ONLY if this exact transaction is linked to an approved withdrawal request via tx_id
+                $showInvoice = in_array((int)$tx['id'], $approvedWrTxIds);
             }
             ?>
             <?php if ($showInvoice): ?>
