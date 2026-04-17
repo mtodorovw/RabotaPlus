@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
             <span class="pill pill-<?= $contract['status'] ?>"><?= ['active'=>'Активен','completed'=>'Завършен','disputed'=>'Спор','cancelled'=>'Отменен'][$contract['status']] ?></span>
         </div>
         <div class="card-body">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.25rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.25rem;" class="contract-parties-grid">
                 <div>
                     <div style="font-size:0.72rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:0.3rem;">Работодател</div>
                     <div style="display:flex;align-items:center;gap:0.6rem;">
@@ -325,4 +325,15 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 </div>
 </div>
+<style>
+@media (max-width: 768px) {
+    .contract-parties-grid { grid-template-columns: 1fr !important; }
+    [style*="display:flex;justify-content:space-around"] { flex-wrap: wrap; gap: 0.5rem !important; }
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] { flex-direction: column; align-items: stretch !important; }
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] .btn,
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] a.btn { width: 100%; text-align: center; justify-content: center; }
+    .table-wrap { overflow-x: auto; }
+    .confirm-status .confirm-row { padding: 0.5rem 0.75rem; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

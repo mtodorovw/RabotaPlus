@@ -134,4 +134,15 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 </div>
+<style>
+@media (max-width: 768px) {
+    /* Contract cards grid */
+    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    /* Contract card action buttons */
+    .card-footer { flex-wrap: wrap; gap: 0.5rem; }
+    .card-footer .btn { flex: 1; text-align: center; min-width: 120px; }
+    /* My listings table */
+    .table-wrap { overflow-x: auto; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

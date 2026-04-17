@@ -165,4 +165,12 @@ function previewAvatar(input) {
 }
 </script>
 
+<style>
+@media (max-width: 768px) {
+    .profile-header { flex-direction: column; align-items: center; text-align: center; gap: 1rem; }
+    [style*="display:grid;grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    [style*="display:flex;gap:1rem;flex-wrap:wrap"] { flex-direction: column; }
+    [style*="display:flex;gap:1rem;flex-wrap:wrap"] .btn { width: 100%; text-align: center; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

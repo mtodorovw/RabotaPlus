@@ -68,7 +68,7 @@ function renderAttachment(string $path, string $type, string $name = ''): string
 }
 ?>
 <div class="fade-in" style="max-width:1000px;margin:0 auto;">
-<div class="chat-layout">
+<div class="chat-layout chat-layout-chat">
     <!-- Sidebar -->
     <div class="chat-sidebar">
         <div class="chat-sidebar-header"><a href="<?= url('messages/index.php') ?>" style="color:var(--gold);font-size:0.85rem;">← Съобщения</a></div>
@@ -87,12 +87,14 @@ function renderAttachment(string $path, string $type, string $name = ''): string
     <!-- Main -->
     <div class="chat-main" id="chat-main-wrap" style="position:relative;">
         <div class="chat-main-header">
+            <a href="<?= url('messages/index.php') ?>" class="btn btn-outline btn-sm" style="display:none;" id="mobile-back-btn">← Назад</a>
             <img src="<?= avatarUrl($otherAvatar,$otherName) ?>" alt="">
             <div>
                 <h3><?= h($otherName) ?></h3>
                 <small><a href="<?= url('listings/view.php?id='.$chat['listing_id']) ?>" style="color:var(--gold);"><?= h(mb_strimwidth($chat['listing_title'],0,60,'...','UTF-8')) ?></a></small>
             </div>
         </div>
+        <style>@media(max-width:768px){#mobile-back-btn{display:inline-flex !important;}}</style>
 
         <div class="chat-messages" id="chat-messages">
             <?php if (empty($messages)): ?>

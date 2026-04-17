@@ -107,4 +107,11 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 </div>
+<style>
+@media (max-width: 768px) {
+    [style*="display:grid;grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    [style*="display:flex;gap:0.75rem"] { flex-direction: column; }
+    [style*="display:flex;gap:0.75rem"] .btn { width: 100%; text-align: center; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

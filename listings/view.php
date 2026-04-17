@@ -298,4 +298,13 @@ require_once __DIR__ . '/../includes/header.php';
 .listing-detail-grid { display:grid; grid-template-columns:2fr 1fr; gap:2rem; align-items:start; }
 @media(max-width:768px){ .listing-detail-grid { grid-template-columns:1fr; } }
 </style>
+<style>
+@media (max-width: 768px) {
+    /* Applicant rows */
+    .applicant-row { flex-wrap: wrap; gap: 0.5rem; }
+    .applicant-row .btn { flex: 1; min-width: 120px; text-align: center; }
+    /* Action buttons at bottom */
+    [style*="display:flex;gap:0.75rem"] .btn { flex: 1; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
