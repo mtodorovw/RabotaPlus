@@ -42,4 +42,12 @@ require_once __DIR__ . '/../includes/header.php';
 
 </div></div>
 </div>
+<style>
+@media (max-width: 768px) {
+    .legal-content { font-size: 0.9rem; }
+    .legal-content h2 { font-size: 1.15rem; }
+    .legal-content h3 { font-size: 1rem; }
+    [style*="display:grid"] { grid-template-columns: 1fr !important; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
