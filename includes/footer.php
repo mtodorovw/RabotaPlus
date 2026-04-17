@@ -105,6 +105,7 @@ function markAllRead(){
 setInterval(()=>{
     fetch(apiUrl('api/poll.php?type=notif_count'))
         .then(r=>r.json()).then(d=>{
+            // nav-notif = mobile bell, nav-notif-desktop = desktop bell
             ['nav-notif','nav-notif-desktop'].forEach(function(id){
                 var b=document.getElementById(id);
                 if(b){ b.textContent=d.count||''; d.count>0?b.classList.remove('hidden'):b.classList.add('hidden'); }

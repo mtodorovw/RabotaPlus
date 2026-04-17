@@ -22,48 +22,71 @@ $cur     = $_SERVER['PHP_SELF'];
 <body>
 
 <nav class="navbar">
+    <!-- Logo -->
     <a href="<?= url('index.php') ?>" class="nav-brand">
         <span class="brand-icon">⚡</span>
         <span><?= SITE_NAME ?></span>
     </a>
 
     <?php if ($user): ?>
-    <!-- Mobile: notifications always visible + hamburger -->
+    <!-- Mobile right side: chat + notif + hamburger (nav) + profile button -->
     <div class="mobile-nav-right">
-        <!-- Chat icon -->
+        <!-- Chat -->
         <a href="<?= url('messages/index.php') ?>" class="nav-icon-link" style="position:relative;">
             <span class="nav-icon">💬</span>
-            <?php if ($unread > 0): ?><span class="badge" id="nav-unread-m"><?= $unread ?></span><?php else: ?><span class="badge hidden" id="nav-unread-m"></span><?php endif; ?>
+            <span class="badge<?= $unread === 0 ? ' hidden' : '' ?>" id="nav-unread-m"><?= $unread ?: '' ?></span>
         </a>
-        <!-- Notifications Bell -->
-        <div class="notif-wrap" id="notif-wrap-m" style="position:relative;">
-            <button class="nav-icon-link notif-btn" onclick="toggleNotifPanel()" title="Нотификации">
-                <span class="nav-icon">🔔</span>
-                <span class="badge<?= $notifs === 0 ? ' hidden' : '' ?>" id="nav-notif"><?= $notifs > 0 ? $notifs : '' ?></span>
-            </button>
-        </div>
-        <!-- Hamburger -->
-        <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Меню">
-            <span></span><span></span><span></span>
+        <!-- Notifications -->
+        <button class="nav-icon-link notif-btn" onclick="toggleNotifPanel()" title="Нотификации" style="position:relative;">
+            <span class="nav-icon">🔔</span>
+            <span class="badge<?= $notifs === 0 ? ' hidden' : '' ?>" id="nav-notif"><?= $notifs ?: '' ?></span>
         </button>
+        <!-- Hamburger: nav menu (Обяви / Договори / Публикувай) — wrapped for relative positioning -->
+        <div class="mob-btn-wrap">
+            <button class="hamburger" id="hamburger-nav" onclick="toggleHamburger('hamburger-nav','mobile-nav-menu')" aria-label="Навигация">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="mobile-dropdown" id="mobile-nav-menu">
+                <a href="<?= url('index.php') ?>" class="mobile-menu-link">🏠 Обяви</a>
+                <a href="<?= url('contracts/index.php') ?>" class="mobile-menu-link">📄 Договори</a>
+                <a href="<?= url('listings/create.php') ?>" class="mobile-menu-link">✏️ + Публикувай</a>
+                <?php if ($user['role'] === 'admin'): ?>
+                <a href="<?= url('admin/disputes.php') ?>" class="mobile-menu-link">⚙️ Админ</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <!-- Profile button — wrapped for relative positioning -->
+        <div class="mob-btn-wrap">
+            <button class="hamburger hamburger-profile" id="hamburger-profile" onclick="toggleHamburger('hamburger-profile','mobile-profile-menu')" aria-label="Профил">
+                <img src="<?= avatarUrl($user['avatar'], $user['name']) ?>" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" alt="">
+            </button>
+            <div class="mobile-dropdown mobile-dropdown-right" id="mobile-profile-menu">
+                <div class="mobile-menu-balance">Баланс: <strong><?= formatMoney((float)$user['balance']) ?></strong></div>
+                <a href="<?= url('profile/edit.php') ?>" class="mobile-menu-link">👤 Профил</a>
+                <a href="<?= url('profile/transactions.php') ?>" class="mobile-menu-link">💳 Транзакции</a>
+                <a href="<?= url('profile/deposit.php') ?>" class="mobile-menu-link">⬆ Депозит</a>
+                <a href="<?= url('profile/withdraw.php') ?>" class="mobile-menu-link">⬇ Теглене</a>
+                <a href="<?= url('auth/logout.php') ?>" class="mobile-menu-link mobile-menu-logout">← Изход</a>
+            </div>
+        </div>
     </div>
     <?php endif; ?>
 
-    <!-- Desktop nav + mobile dropdown menu -->
+    <!-- Desktop nav links -->
     <div class="nav-links" id="nav-links">
         <a href="<?= url('index.php') ?>" class="nav-link<?= str_contains($cur,'index') ? ' active' : '' ?>">Обяви</a>
         <?php if ($user): ?>
             <a href="<?= url('contracts/index.php') ?>" class="nav-link<?= str_contains($cur,'contracts') ? ' active' : '' ?>">Договори</a>
             <a href="<?= url('listings/create.php') ?>" class="nav-link">+ Публикувай</a>
-            <a href="<?= url('messages/index.php') ?>" class="nav-link nav-icon-link nav-desktop-only<?= str_contains($cur,'messages') ? ' active' : '' ?>">
+            <a href="<?= url('messages/index.php') ?>" class="nav-link nav-icon-link<?= str_contains($cur,'messages') ? ' active' : '' ?>">
                 <span class="nav-icon">💬</span>
-                <?php if ($unread > 0): ?><span class="badge" id="nav-unread"><?= $unread ?></span><?php else: ?><span class="badge hidden" id="nav-unread"></span><?php endif; ?>
+                <span class="badge<?= $unread === 0 ? ' hidden' : '' ?>" id="nav-unread"><?= $unread ?: '' ?></span>
             </a>
-            <!-- Notifications Bell (desktop only) -->
-            <div class="notif-wrap nav-desktop-only" id="notif-wrap">
+            <!-- Notifications Bell (desktop) -->
+            <div class="notif-wrap" id="notif-wrap">
                 <button class="nav-icon-link notif-btn" onclick="toggleNotifPanel()" title="Нотификации">
                     <span class="nav-icon">🔔</span>
-                    <span class="badge hidden" id="nav-notif-desktop"></span>
+                    <span class="badge<?= $notifs === 0 ? ' hidden' : '' ?>" id="nav-notif-desktop"><?= $notifs ?: '' ?></span>
                 </button>
                 <div class="notif-panel" id="notif-panel">
                     <div class="notif-panel-header">
@@ -94,56 +117,40 @@ $cur     = $_SERVER['PHP_SELF'];
                     </div>
                 </div>
             </div>
-            <!-- Mobile menu items (shown in dropdown) -->
-            <div class="mobile-menu-section">
-                <div class="mobile-menu-balance">Баланс: <strong><?= formatMoney((float)$user['balance']) ?></strong></div>
-                <a href="<?= url('profile/edit.php') ?>" class="mobile-menu-link">👤 Профил</a>
-                <a href="<?= url('profile/transactions.php') ?>" class="mobile-menu-link">💳 Транзакции</a>
-                <a href="<?= url('profile/deposit.php') ?>" class="mobile-menu-link">⬆ Депозит</a>
-                <a href="<?= url('profile/withdraw.php') ?>" class="mobile-menu-link">⬇ Теглене</a>
-                <?php if ($user['role'] === 'admin'): ?>
-                <a href="<?= url('admin/disputes.php') ?>" class="mobile-menu-link">⚙️ Админ панел</a>
-                <?php endif; ?>
-                <a href="<?= url('auth/logout.php') ?>" class="mobile-menu-link mobile-menu-logout">← Изход</a>
-            </div>
         <?php else: ?>
             <a href="<?= url('auth/login.php') ?>" class="nav-link">Вход</a>
             <a href="<?= url('auth/register.php') ?>" class="btn btn-sm">Регистрация</a>
         <?php endif; ?>
     </div>
 </nav>
+
+<!-- Notification panel for mobile (outside nav so it's not clipped) -->
+<?php if ($user): ?>
+<div class="notif-panel-mobile" id="notif-panel-mobile">
+    <div class="notif-panel-header">
+        <span>Нотификации</span>
+        <button onclick="markAllRead()" class="notif-mark-all">Маркирай всички</button>
+    </div>
+    <div class="notif-list" id="notif-list-mobile">
+        <div class="notif-loading">Зарежда...</div>
+    </div>
+</div>
+<?php endif; ?>
+
 <script>
-function toggleMobileMenu() {
-    var links = document.getElementById('nav-links');
-    var btn   = document.getElementById('hamburger-btn');
-    var open  = links.classList.toggle('mobile-open');
-    btn.classList.toggle('active', open);
-    if (open) {
-        document.addEventListener('click', function closeMM(e) {
-            var nav = document.querySelector('.navbar');
-            if (!nav.contains(e.target)) {
-                links.classList.remove('mobile-open');
-                btn.classList.remove('active');
-                document.removeEventListener('click', closeMM);
-            }
-        });
-    }
-}
-</script>
-<script>
+// BASE_URL defined early so mobile notifications work before footer loads
+var BASE_URL = '<?= BASE_URL ?>';
+// ── User profile dropdown (desktop) ──────────────────────
 (function() {
     function initDropdown() {
         var btn = document.getElementById('nav-user-btn');
         var dd  = document.getElementById('nav-user-dropdown');
         if (!btn || !dd) return;
-
         btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             var isOpen = dd.style.display === 'block';
             dd.style.display = isOpen ? 'none' : 'block';
             if (!isOpen) {
-                // Use mousedown instead of click to avoid false triggers
                 document.addEventListener('mousedown', function closeDD(e2) {
                     var wrap = document.getElementById('nav-user-wrap');
                     if (!wrap || !wrap.contains(e2.target)) {
@@ -154,12 +161,96 @@ function toggleMobileMenu() {
             }
         });
     }
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDropdown);
-    } else {
-        initDropdown();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDropdown);
+    else initDropdown();
 })();
+
+// ── Mobile hamburger dropdowns ────────────────────────────
+function toggleHamburger(btnId, menuId) {
+    var menu = document.getElementById(menuId);
+    var btn  = document.getElementById(btnId);
+    var isOpen = menu.classList.contains('open');
+
+    // Close all mobile dropdowns first
+    document.querySelectorAll('.mobile-dropdown').forEach(function(m){ m.classList.remove('open'); });
+    document.querySelectorAll('.hamburger').forEach(function(b){ b.classList.remove('active'); });
+    // Close notif panel too
+    var np = document.getElementById('notif-panel-mobile');
+    if (np) np.classList.remove('open');
+
+    if (!isOpen) {
+        menu.classList.add('open');
+        btn.classList.add('active');
+        setTimeout(function() {
+            document.addEventListener('click', function closeMenu(e2) {
+                var nav = document.querySelector('.navbar');
+                var m2  = document.getElementById(menuId);
+                if (!nav || (!nav.contains(e2.target) && !m2.contains(e2.target))) {
+                    m2.classList.remove('open');
+                    document.getElementById(btnId).classList.remove('active');
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }, 0);
+    }
+}
+
+// ── Mobile notification panel ─────────────────────────────
+var _mobileNotifOpen = false;
+var _origToggle = window.toggleNotifPanel;
+window.toggleNotifPanel = function() {
+    var isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        var panel = document.getElementById('notif-panel-mobile');
+        var list  = document.getElementById('notif-list-mobile');
+        if (!panel) return;
+        _mobileNotifOpen = !panel.classList.contains('open');
+        // Close other dropdowns
+        document.querySelectorAll('.mobile-dropdown').forEach(function(m){ m.classList.remove('open'); });
+        document.querySelectorAll('.hamburger').forEach(function(b){ b.classList.remove('active'); });
+        if (_mobileNotifOpen) {
+            panel.classList.add('open');
+            // Load notifications into mobile panel
+            fetch(BASE_URL + '/api/poll.php?type=notifications')
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    if (!data.notifications || !data.notifications.length) {
+                        list.innerHTML = '<div class="notif-empty">Нямаш нотификации</div>'; return;
+                    }
+                    list.innerHTML = data.notifications.map(function(n) {
+                        return '<a href="'+(n.link||'#')+'" class="notif-item'+(n.is_read=='0'?' unread':'')+'" data-id="'+n.id+'" onclick="markRead('+n.id+')">'
+                            +'<span class="notif-icon">'+notifIcon(n.type)+'</span>'
+                            +'<div class="notif-body"><div class="notif-msg">'+escHtml(n.message)+'</div>'
+                            +'<div class="notif-time">'+n.time_ago+'</div></div>'
+                            +(n.is_read=='0'?'<span class="notif-dot"></span>':'')
+                            +'</a>';
+                    }).join('');
+                    setTimeout(function(){
+                        document.addEventListener('click', function closeMNP(e2){
+                            if (!panel.contains(e2.target)) {
+                                panel.classList.remove('open');
+                                document.removeEventListener('click', closeMNP);
+                            }
+                        });
+                    }, 0);
+                }).catch(function(){});
+        } else {
+            panel.classList.remove('open');
+        }
+    } else {
+        // Desktop: use original behavior (defined in footer.php)
+        var p = document.getElementById('notif-panel');
+        var w = document.getElementById('notif-wrap');
+        if (!p) return;
+        var isOpen = p.classList.toggle('open');
+        if (isOpen) {
+            if (typeof loadNotifications === 'function') loadNotifications();
+            document.addEventListener('click', function outsideClick(e){
+                if(!w.contains(e.target)){ p.classList.remove('open'); document.removeEventListener('click',outsideClick); }
+            });
+        }
+    }
+};
 </script>
 
 <main class="main-content">
