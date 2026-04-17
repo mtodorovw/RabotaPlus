@@ -608,4 +608,19 @@ document.addEventListener('paste', function(ev) {
 });
 </script>
 
+<style>
+@media (max-width: 768px) {
+    /* Admin dispute cards: 3-col grid → 1-col */
+    [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
+    /* Dispute action buttons */
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap"] { flex-direction: column; }
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap"] .btn { width: 100%; text-align: center; }
+    /* Stats cards */
+    [style*="grid-template-columns:repeat(auto-fit,minmax(150px"] { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+    [style*="grid-template-columns:repeat(auto-fit,minmax(150px"] { grid-template-columns: 1fr !important; }
+}
+</style>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

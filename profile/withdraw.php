@@ -265,4 +265,10 @@ document.getElementById('withdraw-form').addEventListener('submit', async e => {
 </script>
 <?php endif; ?>
 
+<style>
+@media (max-width: 768px) {
+    [style*="display:flex;gap:1rem"] { flex-direction: column; }
+    .form-group { margin-bottom: 0.75rem; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

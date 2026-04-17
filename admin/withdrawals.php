@@ -293,4 +293,13 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 <?php endif; ?>
 </div>
+<style>
+@media (max-width: 768px) {
+    .table-wrap { overflow-x: auto; }
+    table { min-width: 600px; }
+    /* Approve/reject buttons */
+    [style*="display:flex;gap:0.5rem"] { flex-direction: column; }
+    [style*="display:flex;gap:0.5rem"] .btn { width: 100%; text-align: center; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

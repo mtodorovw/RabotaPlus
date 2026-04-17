@@ -89,4 +89,10 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 </div>
+<style>
+@media (max-width: 480px) {
+    .auth-card { margin: 0 0.5rem; }
+    .auth-card-body { padding: 1.25rem; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

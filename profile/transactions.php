@@ -169,7 +169,7 @@ require_once __DIR__ . '/../includes/header.php';
         <td style="font-weight:700;white-space:nowrap;color:<?= $isPositive ? 'var(--success)' : '#e06c75' ?>;">
             <?= $isPositive ? '+' : '-' ?><?= formatMoney(abs($tx['amount'])) ?>
         </td>
-        <td style="font-size:0.85rem;color:var(--text-muted);max-width:200px;"><?= h($tx['description'] ?? '') ?></td>
+        <td class="tx-col-hide" style="font-size:0.85rem;color:var(--text-muted);max-width:200px;"><?= h($tx['description'] ?? '') ?></td>
         <td style="font-size:0.82rem;">
             <?php if ($tx['listing_title'] && $tx['contract_id']): ?>
                 <a href="<?= url('contracts/view.php?id='.$tx['contract_id']) ?>" style="color:var(--gold);">

@@ -178,4 +178,13 @@ document.getElementById('deposit-form').addEventListener('submit', async functio
 </script>
 <?php endif; ?>
 
+<style>
+@media (max-width: 768px) {
+    /* Quick amount buttons */
+    [style*="display:flex;gap:0.5rem;flex-wrap:wrap"] { justify-content: stretch; }
+    [style*="display:flex;gap:0.5rem;flex-wrap:wrap"] .btn { flex: 1; min-width: 60px; }
+    /* Stripe element */
+    #card-element { padding: 0.75rem; }
+}
+</style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
