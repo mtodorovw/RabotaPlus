@@ -40,8 +40,10 @@ function apiUrl(p){ return BASE_URL + '/' + p; }
 (function pollUnread(){
     fetch(apiUrl('api/poll.php?type=unread'))
         .then(r=>r.json()).then(d=>{
-            const b = document.getElementById('nav-unread');
-            if(b){ b.textContent = d.count||''; d.count>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            ['nav-unread','nav-unread-m'].forEach(function(id){
+                var b=document.getElementById(id);
+                if(b){ b.textContent=d.count||''; d.count>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            });
         }).catch(()=>{});
     setTimeout(pollUnread, 8000);
 })();
@@ -61,7 +63,6 @@ function loadNotifications(){
     fetch(apiUrl('api/poll.php?type=notifications'))
         .then(r=>r.json()).then(data=>{
             const list = document.getElementById('notif-list');
-            const badge = document.getElementById('nav-notif');
             if(!data.notifications || data.notifications.length===0){
                 list.innerHTML = '<div class="notif-empty">Нямаш нотификации</div>';
                 return;
@@ -76,8 +77,11 @@ function loadNotifications(){
                     ${n.is_read=='0'?'<span class="notif-dot"></span>':''}
                 </a>`).join('');
             const unread = data.notifications.filter(n=>n.is_read=='0').length;
-            badge.textContent = unread||'';
-            unread>0?badge.classList.remove('hidden'):badge.classList.add('hidden');
+            // Update all notification badges (mobile + desktop)
+            ['nav-notif','nav-notif-desktop'].forEach(function(id){
+                var b = document.getElementById(id);
+                if(b){ b.textContent=unread||''; unread>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            });
         }).catch(()=>{});
 }
 
@@ -101,8 +105,10 @@ function markAllRead(){
 setInterval(()=>{
     fetch(apiUrl('api/poll.php?type=notif_count'))
         .then(r=>r.json()).then(d=>{
-            const b=document.getElementById('nav-notif');
-            if(b){ b.textContent=d.count||''; d.count>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            ['nav-notif','nav-notif-desktop'].forEach(function(id){
+                var b=document.getElementById(id);
+                if(b){ b.textContent=d.count||''; d.count>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            });
         }).catch(()=>{});
 }, 15000);
 // Shared timeAgo function (matches PHP timeAgo() exactly)

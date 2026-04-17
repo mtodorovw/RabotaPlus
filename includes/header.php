@@ -26,20 +26,44 @@ $cur     = $_SERVER['PHP_SELF'];
         <span class="brand-icon">⚡</span>
         <span><?= SITE_NAME ?></span>
     </a>
-    <div class="nav-links">
+
+    <?php if ($user): ?>
+    <!-- Mobile: notifications always visible + hamburger -->
+    <div class="mobile-nav-right">
+        <!-- Chat icon -->
+        <a href="<?= url('messages/index.php') ?>" class="nav-icon-link" style="position:relative;">
+            <span class="nav-icon">💬</span>
+            <?php if ($unread > 0): ?><span class="badge" id="nav-unread-m"><?= $unread ?></span><?php else: ?><span class="badge hidden" id="nav-unread-m"></span><?php endif; ?>
+        </a>
+        <!-- Notifications Bell -->
+        <div class="notif-wrap" id="notif-wrap-m" style="position:relative;">
+            <button class="nav-icon-link notif-btn" onclick="toggleNotifPanel()" title="Нотификации">
+                <span class="nav-icon">🔔</span>
+                <span class="badge<?= $notifs === 0 ? ' hidden' : '' ?>" id="nav-notif"><?= $notifs > 0 ? $notifs : '' ?></span>
+            </button>
+        </div>
+        <!-- Hamburger -->
+        <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <?php endif; ?>
+
+    <!-- Desktop nav + mobile dropdown menu -->
+    <div class="nav-links" id="nav-links">
         <a href="<?= url('index.php') ?>" class="nav-link<?= str_contains($cur,'index') ? ' active' : '' ?>">Обяви</a>
         <?php if ($user): ?>
             <a href="<?= url('contracts/index.php') ?>" class="nav-link<?= str_contains($cur,'contracts') ? ' active' : '' ?>">Договори</a>
             <a href="<?= url('listings/create.php') ?>" class="nav-link">+ Публикувай</a>
-            <a href="<?= url('messages/index.php') ?>" class="nav-link nav-icon-link<?= str_contains($cur,'messages') ? ' active' : '' ?>">
+            <a href="<?= url('messages/index.php') ?>" class="nav-link nav-icon-link nav-desktop-only<?= str_contains($cur,'messages') ? ' active' : '' ?>">
                 <span class="nav-icon">💬</span>
                 <?php if ($unread > 0): ?><span class="badge" id="nav-unread"><?= $unread ?></span><?php else: ?><span class="badge hidden" id="nav-unread"></span><?php endif; ?>
             </a>
-            <!-- Notifications Bell -->
-            <div class="notif-wrap" id="notif-wrap">
+            <!-- Notifications Bell (desktop only) -->
+            <div class="notif-wrap nav-desktop-only" id="notif-wrap">
                 <button class="nav-icon-link notif-btn" onclick="toggleNotifPanel()" title="Нотификации">
                     <span class="nav-icon">🔔</span>
-                    <span class="badge<?= $notifs === 0 ? ' hidden' : '' ?>" id="nav-notif"><?= $notifs > 0 ? $notifs : '' ?></span>
+                    <span class="badge hidden" id="nav-notif-desktop"></span>
                 </button>
                 <div class="notif-panel" id="notif-panel">
                     <div class="notif-panel-header">
@@ -70,12 +94,42 @@ $cur     = $_SERVER['PHP_SELF'];
                     </div>
                 </div>
             </div>
+            <!-- Mobile menu items (shown in dropdown) -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-balance">Баланс: <strong><?= formatMoney((float)$user['balance']) ?></strong></div>
+                <a href="<?= url('profile/edit.php') ?>" class="mobile-menu-link">👤 Профил</a>
+                <a href="<?= url('profile/transactions.php') ?>" class="mobile-menu-link">💳 Транзакции</a>
+                <a href="<?= url('profile/deposit.php') ?>" class="mobile-menu-link">⬆ Депозит</a>
+                <a href="<?= url('profile/withdraw.php') ?>" class="mobile-menu-link">⬇ Теглене</a>
+                <?php if ($user['role'] === 'admin'): ?>
+                <a href="<?= url('admin/disputes.php') ?>" class="mobile-menu-link">⚙️ Админ панел</a>
+                <?php endif; ?>
+                <a href="<?= url('auth/logout.php') ?>" class="mobile-menu-link mobile-menu-logout">← Изход</a>
+            </div>
         <?php else: ?>
             <a href="<?= url('auth/login.php') ?>" class="nav-link">Вход</a>
             <a href="<?= url('auth/register.php') ?>" class="btn btn-sm">Регистрация</a>
         <?php endif; ?>
     </div>
 </nav>
+<script>
+function toggleMobileMenu() {
+    var links = document.getElementById('nav-links');
+    var btn   = document.getElementById('hamburger-btn');
+    var open  = links.classList.toggle('mobile-open');
+    btn.classList.toggle('active', open);
+    if (open) {
+        document.addEventListener('click', function closeMM(e) {
+            var nav = document.querySelector('.navbar');
+            if (!nav.contains(e.target)) {
+                links.classList.remove('mobile-open');
+                btn.classList.remove('active');
+                document.removeEventListener('click', closeMM);
+            }
+        });
+    }
+}
+</script>
 <script>
 (function() {
     function initDropdown() {
