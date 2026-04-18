@@ -72,6 +72,14 @@ $cur     = $_SERVER['PHP_SELF'];
     </div>
     <?php endif; ?>
 
+    <!-- Mobile auth buttons (non-logged-in) -->
+    <?php if (!$user): ?>
+    <div class="mobile-nav-right">
+        <a href="<?= url('auth/login.php') ?>" class="btn btn-sm" style="font-size:0.78rem;padding:0.3rem 0.65rem;">Вход</a>
+        <a href="<?= url('auth/register.php') ?>" class="btn btn-sm" style="font-size:0.78rem;padding:0.3rem 0.65rem;background:var(--gold);color:var(--navy);border-color:var(--gold);">Регистрация</a>
+    </div>
+    <?php endif; ?>
+
     <!-- Desktop nav links -->
     <div class="nav-links" id="nav-links">
         <a href="<?= url('index.php') ?>" class="nav-link<?= str_contains($cur,'index') ? ' active' : '' ?>">Обяви</a>

@@ -33,7 +33,8 @@
 
 <?php if (auth()): ?>
 <script>
-const BASE_URL = '<?= BASE_URL ?>';
+// BASE_URL already declared in header.php
+if (typeof BASE_URL === 'undefined') var BASE_URL = '<?= BASE_URL ?>';
 function apiUrl(p){ return BASE_URL + '/' + p; }
 
 // ── Unread messages polling ───────────────────────────────
