@@ -195,62 +195,7 @@ function toggleHamburger(btnId, menuId) {
     }
 }
 
-// ── Mobile notification panel ─────────────────────────────
-var _mobileNotifOpen = false;
-var _origToggle = window.toggleNotifPanel;
-window.toggleNotifPanel = function() {
-    var isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-        var panel = document.getElementById('notif-panel-mobile');
-        var list  = document.getElementById('notif-list-mobile');
-        if (!panel) return;
-        _mobileNotifOpen = !panel.classList.contains('open');
-        // Close other dropdowns
-        document.querySelectorAll('.mobile-dropdown').forEach(function(m){ m.classList.remove('open'); });
-        document.querySelectorAll('.hamburger').forEach(function(b){ b.classList.remove('active'); });
-        if (_mobileNotifOpen) {
-            panel.classList.add('open');
-            // Load notifications into mobile panel
-            fetch(BASE_URL + '/api/poll.php?type=notifications')
-                .then(function(r){ return r.json(); })
-                .then(function(data) {
-                    if (!data.notifications || !data.notifications.length) {
-                        list.innerHTML = '<div class="notif-empty">Нямаш нотификации</div>'; return;
-                    }
-                    list.innerHTML = data.notifications.map(function(n) {
-                        return '<a href="'+(n.link||'#')+'" class="notif-item'+(n.is_read=='0'?' unread':'')+'" data-id="'+n.id+'" onclick="markRead('+n.id+')">'
-                            +'<span class="notif-icon">'+notifIcon(n.type)+'</span>'
-                            +'<div class="notif-body"><div class="notif-msg">'+escHtml(n.message)+'</div>'
-                            +'<div class="notif-time">'+n.time_ago+'</div></div>'
-                            +(n.is_read=='0'?'<span class="notif-dot"></span>':'')
-                            +'</a>';
-                    }).join('');
-                    setTimeout(function(){
-                        document.addEventListener('click', function closeMNP(e2){
-                            if (!panel.contains(e2.target)) {
-                                panel.classList.remove('open');
-                                document.removeEventListener('click', closeMNP);
-                            }
-                        });
-                    }, 0);
-                }).catch(function(){});
-        } else {
-            panel.classList.remove('open');
-        }
-    } else {
-        // Desktop: use original behavior (defined in footer.php)
-        var p = document.getElementById('notif-panel');
-        var w = document.getElementById('notif-wrap');
-        if (!p) return;
-        var isOpen = p.classList.toggle('open');
-        if (isOpen) {
-            if (typeof loadNotifications === 'function') loadNotifications();
-            document.addEventListener('click', function outsideClick(e){
-                if(!w.contains(e.target)){ p.classList.remove('open'); document.removeEventListener('click',outsideClick); }
-            });
-        }
-    }
-};
+// toggleNotifPanel is defined in footer.php and handles both mobile and desktop
 </script>
 
 <main class="main-content">

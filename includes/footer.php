@@ -50,13 +50,64 @@ function apiUrl(p){ return BASE_URL + '/' + p; }
 
 // ── Notifications ─────────────────────────────────────────
 function toggleNotifPanel(){
-    const p = document.getElementById('notif-panel');
-    const w = document.getElementById('notif-wrap');
-    const isOpen = p.classList.toggle('open');
-    if(isOpen) loadNotifications();
-    document.addEventListener('click', function outsideClick(e){
-        if(!w.contains(e.target)){ p.classList.remove('open'); document.removeEventListener('click',outsideClick); }
-    });
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        // Mobile: use the mobile panel
+        const panel = document.getElementById('notif-panel-mobile');
+        if (!panel) return;
+        const isOpen = panel.classList.toggle('open');
+        // Close other dropdowns
+        document.querySelectorAll('.mobile-dropdown').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.hamburger').forEach(b => b.classList.remove('active'));
+        if (isOpen) {
+            loadNotificationsMobile();
+            setTimeout(() => {
+                document.addEventListener('click', function closeMNP(e){
+                    if (!panel.contains(e.target) && !e.target.closest('.notif-btn')) {
+                        panel.classList.remove('open');
+                        document.removeEventListener('click', closeMNP);
+                    }
+                });
+            }, 0);
+        }
+    } else {
+        // Desktop
+        const p = document.getElementById('notif-panel');
+        const w = document.getElementById('notif-wrap');
+        if (!p) return;
+        const isOpen = p.classList.toggle('open');
+        if (isOpen) loadNotifications();
+        document.addEventListener('click', function outsideClick(e){
+            if(!w || !w.contains(e.target)){ p.classList.remove('open'); document.removeEventListener('click',outsideClick); }
+        });
+    }
+}
+
+function loadNotificationsMobile(){
+    const list = document.getElementById('notif-list-mobile');
+    if (!list) return;
+    list.innerHTML = '<div class="notif-loading">Зарежда...</div>';
+    fetch(apiUrl('api/poll.php?type=notifications'))
+        .then(r=>r.json()).then(data=>{
+            if(!data.notifications || data.notifications.length===0){
+                list.innerHTML = '<div class="notif-empty">Нямаш нотификации</div>'; return;
+            }
+            list.innerHTML = data.notifications.map(n=>`
+                <a href="${n.link||'#'}" class="notif-item${n.is_read=='0'?' unread':''}" data-id="${n.id}" onclick="markRead(${n.id})">
+                    <span class="notif-icon">${notifIcon(n.type)}</span>
+                    <div class="notif-body">
+                        <div class="notif-msg">${escHtml(n.message)}</div>
+                        <div class="notif-time">${n.time_ago}</div>
+                    </div>
+                    ${n.is_read=='0'?'<span class="notif-dot"></span>':''}
+                </a>`).join('');
+            // Update mobile badge
+            const unread = data.notifications.filter(n=>n.is_read=='0').length;
+            ['nav-notif','nav-notif-desktop'].forEach(id=>{
+                const b = document.getElementById(id);
+                if(b){ b.textContent=unread||''; unread>0?b.classList.remove('hidden'):b.classList.add('hidden'); }
+            });
+        }).catch(()=>{ if(list) list.innerHTML = '<div class="notif-empty">Грешка при зареждане</div>'; });
 }
 
 function loadNotifications(){

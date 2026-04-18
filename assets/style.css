@@ -1359,10 +1359,8 @@ tbody tr:hover td { background: var(--navy-3); }
         align-items: center;
     }
 
-    /* Nav menu: opens below its button, aligned left of wrapper */
-    #mobile-nav-menu { top: 100%; left: 0; margin-top: 6px; }
-
-    /* Profile menu: opens below its button, aligned right of wrapper */
+    /* Both menus: open below button, right-aligned so they don't go off-screen */
+    #mobile-nav-menu { top: 100%; left: auto; right: 0; margin-top: 6px; }
     .mobile-dropdown-right { top: 100%; left: auto; right: 0; margin-top: 6px; }
 
     .mobile-menu-balance {
