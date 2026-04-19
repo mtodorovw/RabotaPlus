@@ -100,10 +100,11 @@ require_once __DIR__ . '/../includes/header.php';
     <div style="display:flex;flex-direction:column;gap:1rem;">
     <?php foreach ($contracts as $c): ?>
     <?php $iEmp = $c['employer_id'] === $user['id']; ?>
-    <div class="card" style="cursor:pointer;" onclick="location.href='<?= url("contracts/view.php?id=" . $c['id']) ?>'">
-        <div class="card-body" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-            <div style="flex:1;min-width:0;">
-                <div style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:0.35rem;"><?= h($c['listing_title']) ?></div>
+    <div class="card contract-card" style="cursor:pointer;" onclick="location.href='<?= url("contracts/view.php?id=" . $c['id']) ?>'">
+        <div class="card-body">
+            <!-- Top row: title + role -->
+            <div style="margin-bottom:0.5rem;">
+                <div style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:0.25rem;"><?= h($c['listing_title']) ?></div>
                 <div style="font-size:0.82rem;color:var(--text-muted);">
                     <?php if ($iEmp): ?>
                         👷 Изпълнител: <strong><?= h($c['contractor_name']) ?></strong>
@@ -113,19 +114,22 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div style="font-size:0.78rem;color:var(--text-dim);margin-top:4px;"><?= timeAgo($c['created_at']) ?></div>
             </div>
-            <div style="display:flex;align-items:center;gap:1.5rem;">
-                <div style="text-align:center;">
-                    <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold);"><?= formatMoney($c['amount']) ?></div>
-                    <div style="font-size:0.72rem;color:var(--text-dim);">Сума</div>
-                </div>
-                <div style="text-align:center;">
-                    <div style="font-size:0.8rem;margin-bottom:4px;">
+            <!-- Bottom row: amount + confirmations + status + button -->
+            <div class="contract-card-meta">
+                <div style="display:flex;align-items:center;gap:1rem;flex:1;">
+                    <div>
+                        <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);"><?= formatMoney($c['amount']) ?></div>
+                        <div style="font-size:0.72rem;color:var(--text-dim);">Сума</div>
+                    </div>
+                    <div style="font-size:0.8rem;line-height:1.6;">
                         <?= $c['employer_confirmed'] ? '✅' : '⬜' ?> Работодател<br>
                         <?= $c['contractor_confirmed'] ? '✅' : '⬜' ?> Изпълнител
                     </div>
                 </div>
-                <span class="pill pill-<?= $c['status'] ?>"><?= ['active'=>'Активен','completed'=>'Завършен','disputed'=>'Спор','cancelled'=>'Отменен'][$c['status']] ?></span>
-                <a href="<?= url("contracts/view.php?id=" . $c['id']) ?>" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">Детайли →</a>
+                <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
+                    <span class="pill pill-<?= $c['status'] ?>"><?= ['active'=>'Активен','completed'=>'Завършен','disputed'=>'Спор','cancelled'=>'Отменен'][$c['status']] ?></span>
+                    <a href="<?= url("contracts/view.php?id=" . $c['id']) ?>" class="btn btn-outline btn-sm" onclick="event.stopPropagation()">Детайли</a>
+                </div>
             </div>
         </div>
     </div>
@@ -135,14 +139,21 @@ require_once __DIR__ . '/../includes/header.php';
 
 </div>
 <style>
+.contract-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-dim);
+}
 @media (max-width: 768px) {
-    /* Contract cards grid */
-    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-    /* Contract card action buttons */
-    .card-footer { flex-wrap: wrap; gap: 0.5rem; }
-    .card-footer .btn { flex: 1; text-align: center; min-width: 120px; }
-    /* My listings table */
     .table-wrap { overflow-x: auto; }
+    .contract-card-meta { gap: 0.5rem; }
+    .contract-card-meta .pill { font-size: 0.75rem; padding: 0.2rem 0.5rem; }
+    .contract-card-meta .btn { font-size: 0.78rem; padding: 0.3rem 0.6rem; }
 }
 </style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

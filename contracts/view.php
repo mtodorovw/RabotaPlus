@@ -327,13 +327,42 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 <style>
 @media (max-width: 768px) {
-    .contract-parties-grid { grid-template-columns: 1fr !important; }
-    [style*="display:flex;justify-content:space-around"] { flex-wrap: wrap; gap: 0.5rem !important; }
-    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] { flex-direction: column; align-items: stretch !important; }
+    /* Parties grid: stack vertically */
+    .contract-parties-grid { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+
+    /* Сума / Създаден / Завършен: wrap and reduce size */
+    [style*="display:flex;justify-content:space-around"] {
+        flex-wrap: wrap; gap: 0.5rem !important;
+    }
+    [style*="display:flex;justify-content:space-around"] > div {
+        flex: 1; min-width: 80px;
+    }
+    [style*="Playfair Display.*1.5rem"] { font-size: 1.15rem !important; }
+
+    /* Action buttons: stack */
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] {
+        flex-direction: column; align-items: stretch !important;
+    }
     [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] .btn,
-    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] a.btn { width: 100%; text-align: center; justify-content: center; }
+    [style*="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center"] a.btn {
+        width: 100%; text-align: center; justify-content: center;
+    }
+
+    /* Confirm box */
+    .confirm-box { padding: 1rem; }
+    #confirm-form { flex-direction: column; }
+    #confirm-form .btn { width: 100%; }
+
+    /* Transaction table */
     .table-wrap { overflow-x: auto; }
-    .confirm-status .confirm-row { padding: 0.5rem 0.75rem; }
+    .table-wrap table { min-width: 480px; font-size: 0.78rem; }
+
+    /* Chat + Обявата buttons */
+    .card-footer { gap: 0.5rem; }
+    .card-footer .btn { flex: 1; text-align: center; }
+
+    /* Breadcrumb */
+    .breadcrumb { font-size: 0.78rem; }
 }
 </style>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
