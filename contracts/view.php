@@ -168,12 +168,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);line-height:1.2;"><?= formatMoney($contract['amount']) ?></div>
                     <div style="font-size:0.72rem;color:var(--text-dim);">Сума</div>
                 </div>
-                <div style="width:1px;height:2.5rem;background:var(--border-dim);"></div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:0.2rem;">
                     <div style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);line-height:1.2;"><?= date('d.m.Y', strtotime($contract['created_at'])) ?></div>
                     <div style="font-size:0.72rem;color:var(--text-dim);">Създаден</div>
                 </div>
-                <div style="width:1px;height:2.5rem;background:var(--border-dim);"></div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:0.2rem;">
                     <div style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);line-height:1.2;"><?= $contract['completed_at'] ? date('d.m.Y', strtotime($contract['completed_at'])) : '—' ?></div>
                     <div style="font-size:0.72rem;color:var(--text-dim);">Завършен</div>
